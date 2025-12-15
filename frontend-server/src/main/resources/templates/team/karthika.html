@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Medical Procedures | MediCare HMS</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../assets/css/style.css" />
+    <script defer src="../assets/js/navbar.js"></script>
+    <script defer src="../assets/js/api-config.js"></script>
+    <script defer src="../assets/js/karthika.js"></script>
+  </head>
+  <body data-route="karthika" class="font-[var(--font-sans)]" th:attr="data-route=${pageRoute}">
+    <div class="min-h-screen bg-gradient-to-br from-sky-50 via-blue-50 to-indigo-50">
+      <header class="border-b border-slate-200/80 bg-white/95 backdrop-blur-xl sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+          <div class="flex items-center justify-between h-20">
+            <a href="/" class="flex items-center gap-3 group">
+              <div
+                class="size-12 rounded-xl bg-gradient-to-br from-cyan-500 via-blue-500 to-indigo-500 flex items-center justify-center shadow-lg shadow-blue-500/20 group-hover:shadow-blue-500/30 transition-shadow"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="size-7">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                </svg>
+              </div>
+              <div>
+                <div class="text-xl font-black text-slate-900">MediCare HMS</div>
+              </div>
+            </a>
+            <nav class="hidden lg:flex items-center gap-1">
+              <a data-nav-link data-route="akhila" href="/team/akhila" class="px-4 py-2 rounded-lg font-bold text-sm transition-all">Akhila</a>
+              <a data-nav-link data-route="kanishka" href="/team/kanishka" class="px-4 py-2 rounded-lg font-bold text-sm transition-all">Kanishka</a>
+              <a data-nav-link data-route="samiksha" href="/team/samiksha" class="px-4 py-2 rounded-lg font-bold text-sm transition-all">Samiksha</a>
+              <a data-nav-link data-route="keerthana" href="/team/keerthana" class="px-4 py-2 rounded-lg font-bold text-sm transition-all">Keerthana</a>
+              <a data-nav-link data-route="mahitha" href="/team/mahitha" class="px-4 py-2 rounded-lg font-bold text-sm transition-all">Mahitha</a>
+              <a data-nav-link data-route="karthika" href="/team/karthika" class="px-4 py-2 rounded-lg font-bold text-sm transition-all">Karthika</a>
+            </nav>
+          </div>
+        </div>
+      </header>
+
+      <div class="bg-gradient-to-r from-sky-500 via-blue-500 to-indigo-500 text-white">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 py-12">
+          <div class="grid md:grid-cols-2 gap-10 items-center">
+            <div class="max-w-3xl">
+              <h1 class="text-5xl md:text-6xl font-black tracking-tight">Karthika</h1>
+            </div>
+            <div class="relative h-64 md:h-80 overflow-hidden rounded-3xl shadow-2xl border-4 border-white/30">
+              <img
+                src="https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&w=800&q=80"
+                alt="Karthika spotlight"
+                class="w-full h-full object-cover"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="max-w-7xl mx-auto px-6 lg:px-8 py-12">
+        <h2 class="text-3xl font-black mb-8 text-slate-900">Available Procedures</h2>
+        <div id="karthika-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+      </div>
+    </div>
+    <div id="karthika-modal" class="hidden fixed inset-0 z-50">
+      <div id="karthika-modal-backdrop" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center px-6">
+        <div id="karthika-modal-content" class="w-full max-w-xl"></div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hospital Management System | Team Project Demo</title>
+    <meta
+      name="description"
+      content="A comprehensive hospital management system showcasing entity relationships between patients, physicians, departments, and medical procedures. Built by a team of 6 students."
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="./assets/css/style.css" />
+    <script defer src="./assets/js/api-config.js"></script>
+    <script defer src="./assets/js/navbar.js"></script>
+  </head>
+  <body data-route="home" class="font-[var(--font-sans)]" th:attr="data-route=${pageRoute}">
+    <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50">
+      <header class="border-b border-slate-200/80 bg-white/95 backdrop-blur-xl sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+          <div class="flex items-center justify-between h-20">
+            <a href="/" class="flex items-center gap-3 group">
+              <div
+                class="size-12 rounded-xl bg-gradient-to-br from-cyan-500 via-blue-500 to-indigo-500 flex items-center justify-center shadow-lg shadow-blue-500/20 group-hover:shadow-blue-500/30 transition-shadow"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="white"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="size-7"
+                >
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                </svg>
+              </div>
+              <div>
+                <div class="text-xl font-black text-slate-900">MediCare HMS</div>
+              </div>
+            </a>
+            <nav class="hidden lg:flex items-center gap-1">
+              <a data-nav-link data-route="akhila" href="/team/akhila" class="px-4 py-2 rounded-lg font-bold text-sm transition-all">Akhila</a>
+              <a data-nav-link data-route="kanishka" href="/team/kanishka" class="px-4 py-2 rounded-lg font-bold text-sm transition-all">Kanishka</a>
+              <a data-nav-link data-route="samiksha" href="/team/samiksha" class="px-4 py-2 rounded-lg font-bold text-sm transition-all">Samiksha</a>
+              <a data-nav-link data-route="keerthana" href="/team/keerthana" class="px-4 py-2 rounded-lg font-bold text-sm transition-all">Keerthana</a>
+              <a data-nav-link data-route="mahitha" href="/team/mahitha" class="px-4 py-2 rounded-lg font-bold text-sm transition-all">Mahitha</a>
+              <a data-nav-link data-route="karthika" href="/team/karthika" class="px-4 py-2 rounded-lg font-bold text-sm transition-all">Karthika</a>
+            </nav>
+          </div>
+        </div>
+      </header>
+
+      <section class="max-w-7xl mx-auto px-6 lg:px-8 pt-20 pb-16">
+        <div class="max-w-4xl">
+          <h1 class="text-6xl md:text-7xl lg:text-8xl font-black tracking-tight mb-6 leading-[0.95] text-balance">
+            <span class="text-slate-900">Hospital</span>
+            <br />
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-600">Management System</span>
+          </h1>
+        </div>
+      </section>
+
+      <section class="max-w-7xl mx-auto px-6 lg:px-8 pb-20">
+        <div class="mb-12">
+          <h2 class="text-4xl md:text-5xl font-black mb-3 text-slate-900">Team Members</h2>
+        </div>
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Member cards -->
+          <a href="/team/akhila">
+            <div class="group relative overflow-hidden border border-slate-200 hover:border-slate-300 transition-all duration-500 h-full cursor-pointer hover:shadow-2xl hover:-translate-y-2 bg-white rounded-2xl">
+              <div class="relative h-80 overflow-hidden bg-slate-100">
+                <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=800&q=80" alt="Akhila" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                <div class="absolute inset-0 bg-gradient-to-t from-blue-400 via-cyan-400 to-teal-400 opacity-20 group-hover:opacity-30 transition-opacity duration-500"></div>
+              </div>
+              <div class="p-6">
+                <h3 class="text-2xl font-black text-cyan-600">Akhila</h3>
+              </div>
+            </div>
+          </a>
+          <a href="/team/kanishka">
+            <div class="group relative overflow-hidden border border-slate-200 hover:border-slate-300 transition-all duration-500 h-full cursor-pointer hover:shadow-2xl hover:-translate-y-2 bg-white rounded-2xl">
+              <div class="relative h-80 overflow-hidden bg-slate-100">
+                <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=800&q=80" alt="Kanishka" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                <div class="absolute inset-0 bg-gradient-to-t from-rose-400 via-pink-400 to-fuchsia-400 opacity-20 group-hover:opacity-30 transition-opacity duration-500"></div>
+              </div>
+              <div class="p-6">
+                <h3 class="text-2xl font-black text-rose-600">Kanishka</h3>
+              </div>
+            </div>
+          </a>
+          <a href="/team/samiksha">
+            <div class="group relative overflow-hidden border border-slate-200 hover:border-slate-300 transition-all duration-500 h-full cursor-pointer hover:shadow-2xl hover:-translate-y-2 bg-white rounded-2xl">
+              <div class="relative h-80 overflow-hidden bg-slate-100">
+                <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=800&q=80" alt="Samiksha" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                <div class="absolute inset-0 bg-gradient-to-t from-emerald-400 via-green-400 to-lime-400 opacity-20 group-hover:opacity-30 transition-opacity duration-500"></div>
+              </div>
+              <div class="p-6">
+                <h3 class="text-2xl font-black text-emerald-600">Samiksha</h3>
+              </div>
+            </div>
+          </a>
+          <a href="/team/keerthana">
+            <div class="group relative overflow-hidden border border-slate-200 hover:border-slate-300 transition-all duration-500 h-full cursor-pointer hover:shadow-2xl hover:-translate-y-2 bg-white rounded-2xl">
+              <div class="relative h-80 overflow-hidden bg-slate-100">
+                <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=800&q=80" alt="Keerthana" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                <div class="absolute inset-0 bg-gradient-to-t from-amber-400 via-orange-400 to-yellow-400 opacity-20 group-hover:opacity-30 transition-opacity duration-500"></div>
+              </div>
+              <div class="p-6">
+                <h3 class="text-2xl font-black text-orange-600">Keerthana</h3>
+              </div>
+            </div>
+          </a>
+          <a href="/team/mahitha">
+            <div class="group relative overflow-hidden border border-slate-200 hover:border-slate-300 transition-all duration-500 h-full cursor-pointer hover:shadow-2xl hover:-translate-y-2 bg-white rounded-2xl">
+              <div class="relative h-80 overflow-hidden bg-slate-100">
+                <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=800&q=80" alt="Mahitha" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                <div class="absolute inset-0 bg-gradient-to-t from-violet-400 via-purple-400 to-indigo-400 opacity-20 group-hover:opacity-30 transition-opacity duration-500"></div>
+              </div>
+              <div class="p-6">
+                <h3 class="text-2xl font-black text-purple-600">Mahitha</h3>
+              </div>
+            </div>
+          </a>
+          <a href="/team/karthika">
+            <div class="group relative overflow-hidden border border-slate-200 hover:border-slate-300 transition-all duration-500 h-full cursor-pointer hover:shadow-2xl hover:-translate-y-2 bg-white rounded-2xl">
+              <div class="relative h-80 overflow-hidden bg-slate-100">
+                <img src="https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&w=800&q=80" alt="Karthika" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                <div class="absolute inset-0 bg-gradient-to-t from-sky-400 via-blue-400 to-indigo-400 opacity-20 group-hover:opacity-30 transition-opacity duration-500"></div>
+              </div>
+              <div class="p-6">
+                <h3 class="text-2xl font-black text-sky-600">Karthika</h3>
+              </div>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <footer class="border-t border-slate-200 bg-white/50 backdrop-blur-xl mt-20">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 py-10">
+          <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="flex items-center gap-4">
+              <div class="size-12 rounded-xl bg-gradient-to-br from-cyan-500 via-blue-500 to-indigo-500 flex items-center justify-center shadow-lg shadow-blue-500/20">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="size-7">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                </svg>
+              </div>
+              <div>
+                <div class="text-lg font-black text-slate-900">MediCare HMS</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>
