@@ -1,0 +1,150 @@
+
+@startuml
+title HMS – Class Diagram (Entities)
+!theme plain
+
+package "entity" {
+  class Physician {
+    + EmployeeID : int
+    + Name : String
+    + Position : String
+    + SSN : int
+  }
+
+  class Department {
+    + DepartmentID : int
+    + Name : String
+    + Head : int   <<FK to Physician.EmployeeID>>
+  }
+
+  class Affiliated_With {
+    + Physician : int  <<PK, FK>>
+    + Department : int <<PK, FK>>
+    + PrimaryAffiliation : boolean
+  }
+
+  class Procedures {
+    + Code : int
+    + Name : String
+    + Cost : double
+  }
+
+  class Trained_In {
+    + Physician : int    <<PK, FK>>
+    + Treatment : int    <<PK, FK to Procedures.Code>>
+    + CertificationDate : LocalDateTime
+    + CertificationExpires : LocalDateTime
+  }
+
+  class Patient {
+    + SSN : int
+    + Name : String
+    + Address : String
+    + Phone : String
+    + InsuranceID : int
+    + PCP : int   <<FK to Physician.EmployeeID>>
+  }
+
+  class Nurse {
+    + EmployeeID : int
+    + Name : String
+    + Position : String
+    + Registered : boolean
+    + SSN : int
+  }
+
+  class Appointment {
+    + AppointmentID : int
+    + Patient : int     <<FK to Patient.SSN>>
+    + PrepNurse : int   <<nullable FK to Nurse.EmployeeID>>
+    + Physician : int   <<FK to Physician.EmployeeID>>
+    + Starto : LocalDateTime
+    + Endo : LocalDateTime
+    + ExaminationRoom : String
+  }
+
+  class Medication {
+    + Code : int
+    + Name : String
+    + Brand : String
+    + Description : String
+  }
+
+  class Prescribes {
+    + Physician : int    <<PK, FK>>
+    + Patient : int      <<PK, FK>>
+    + Medication : int   <<PK, FK>>
+    + Date : LocalDateTime <<PK>>
+    + Appointment : int  <<nullable FK>>
+    + Dose : String
+  }
+
+  class Block {
+    + BlockFloor : int
+    + BlockCode : int
+  }
+
+  class Room {
+    + RoomNumber : int
+    + RoomType : String
+    + BlockFloor : int   <<FK>>
+    + BlockCode : int    <<FK>>
+    + Unavailable : boolean
+  }
+
+  class On_Call {
+    + Nurse : int       <<PK, FK>>
+    + BlockFloor : int  <<PK, FK>>
+    + BlockCode : int   <<PK, FK>>
+    + OnCallStart : LocalDateTime <<PK>>
+    + OnCallEnd : LocalDateTime   <<PK>>
+  }
+
+  class Stay {
+    + StayID : int
+    + Patient : int  <<FK>>
+    + Room : int     <<FK>>
+    + StayStart : LocalDateTime
+    + StayEnd : LocalDateTime
+  }
+
+  class Undergoes {
+    + Patient : int         <<PK, FK>>
+    + Procedures : int      <<PK, FK>>
+    + Stay : int            <<PK, FK>>
+    + DateUndergoes : LocalDateTime <<PK>>
+    + Physician : int       <<FK>>
+    + AssistingNurse : int  <<nullable FK>>
+  }
+}
+
+' Optional: relationships (you can remove this block if you only need classes)
+Physician "1" o-- "many" Appointment
+Patient   "1" o-- "many" Appointment
+Nurse     "0..1" o-- "many" Appointment : Prep
+
+Physician "1" o-- "many" Prescribes
+Patient   "1" o-- "many" Prescribes
+Medication "1" o-- "many" Prescribes
+Appointment "0..1" o-- "many" Prescribes
+
+Physician "1" o-- "many" Affiliated_With
+Department "1" o-- "many" Affiliated_With
+
+Physician "1" o-- "many" Trained_In
+Procedures "1" o-- "many" Trained_In
+
+Block "1" o-- "many" Room
+Block "1" o-- "many" On_Call
+Nurse "1" o-- "many" On_Call
+
+Patient "1" o-- "many" Stay
+Room "1" o-- "many" Stay
+
+Patient "1" o-- "many" Undergoes
+Procedures "1" o-- "many" Undergoes
+Stay "1" o-- "many" Undergoes
+Physician "1" o-- "many" Undergoes
+Nurse "0..1" o-- "many" Undergoes : Assists
+
+@enduml

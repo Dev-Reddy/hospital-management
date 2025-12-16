@@ -1,0 +1,131 @@
+
+@startuml
+hide circle
+skinparam linetype ortho
+
+entity Physician {
+  *EmployeeID
+  --
+  Name
+  Position
+  SSN
+}
+
+entity Department {
+  *DepartmentID
+  --
+  Name
+  Head -> Physician.EmployeeID
+}
+
+entity Affiliated_With {
+  *Physician  -> Physician.EmployeeID
+  *Department -> Department.DepartmentID
+  --
+  PrimaryAffiliation
+}
+
+entity Procedures {
+  *Code
+  --
+  Name
+  Cost
+}
+
+entity Trained_In {
+  *Physician -> Physician.EmployeeID
+  *Treatment -> Procedures.Code
+  --
+  CertificationDate
+  CertificationExpires
+}
+
+entity Patient {
+  *SSN
+  --
+  Name
+  Address
+  Phone
+  InsuranceID
+  PCP -> Physician.EmployeeID
+}
+
+entity Nurse {
+  *EmployeeID
+  --
+  Name
+  Position
+  Registered
+  SSN
+}
+
+entity Appointment {
+  *AppointmentID
+  --
+  Patient        -> Patient.Ssn
+  PrepNurse      -> Nurse.EmployeeID
+  Physician      -> Physician.EmployeeID
+  Starto
+  Endo
+  ExaminationRoom
+}
+
+entity Medication {
+  *Code
+  --
+  Name
+  Brand
+  Description
+}
+
+entity Prescribes {
+  *Physician  -> Physician.EmployeeID
+  *Patient    -> Patient.Ssn
+  *Medication -> Medication.Code
+  *Date
+  --
+  Appointment -> Appointment.AppointmentID
+  Dose
+}
+
+entity Block {
+  *BlockFloor
+  *BlockCode
+}
+
+entity Room {
+  *RoomNumber
+  --
+  RoomType
+  BlockFloor -> Block.BlockFloor
+  BlockCode  -> Block.BlockCode
+  Unavailable
+}
+
+entity On_Call {
+  *Nurse       -> Nurse.EmployeeID
+  *BlockFloor  -> Block.BlockFloor
+  *BlockCode   -> Block.BlockCode
+  *OnCallStart
+  *OnCallEnd
+}
+
+entity Stay {
+  *StayID
+  --
+  Patient   -> Patient.Ssn
+  Room      -> Room.RoomNumber
+  StayStart
+  StayEnd
+}
+
+entity Undergoes {
+  *Patient       -> Patient.Ssn
+  *Procedures    -> Procedures.Code
+  *Stay          -> Stay.StayID
+  *DateUndergoes
+  --
+  Physician      -> Physician.EmployeeID
+  AssistingNurse -> Nurse.EmployeeID
+}
+@enduml

@@ -1,0 +1,97 @@
+
+@startuml
+title Hospital Management System (HMS) — Class Diagram
+
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+
+class Physician {
+  int employeeId
+  String name
+  String position
+  int ssn
+}
+
+class Department {
+  int departmentId
+  String name
+  Physician head
+}
+
+class Patient {
+  int ssn
+  String name
+  String address
+  String phone
+  int insuranceId
+  Physician pcp
+}
+
+class Nurse {
+  int employeeId
+  String name
+  String position
+  boolean registered
+  int ssn
+}
+
+class Appointment {
+  int appointmentId
+  Patient patient
+  Nurse prepNurse
+  Physician physician
+  datetime start
+  datetime end
+  String examinationRoom
+}
+
+class Medication {
+  int code
+  String name
+  String brand
+  String description
+}
+
+class Prescription {
+  Physician physician
+  Patient patient
+  Medication medication
+  datetime date
+  Appointment appointment
+  String dose
+}
+
+class Room {
+  int roomNumber
+  String roomType
+  int blockFloor
+  int blockCode
+  boolean unavailable
+}
+
+class Stay {
+  int stayId
+  Patient patient
+  Room room
+  datetime start
+  datetime end
+}
+
+class Procedure {
+  int code
+  String name
+  decimal cost
+}
+
+' Associations
+Department --> Physician : head
+Patient --> Physician : pcp
+Appointment --> Patient
+Appointment --> Nurse : prepNurse (opt)
+Appointment --> Physician
+Prescription --> Medication
+Prescription --> Patient
+Prescription --> Appointment : (opt)
+Stay --> Room
+Stay --> Patient
+@enduml

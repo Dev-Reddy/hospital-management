@@ -1,0 +1,49 @@
+
+@startuml
+title Hospital Management System (HMS) — Use Case Diagram
+
+actor "Patient" as Patient
+actor "Physician" as Doctor
+actor "Nurse" as Nurse
+actor "Admin" as Admin
+
+rectangle "HMS" {
+  (Register/Update Patient Profile)
+  (Search Physician / Department)
+  (Book Appointment)
+  (Cancel/Reschedule Appointment)
+  (Prescribe Medication)
+  (Maintain Medication Catalog)
+  (Admit Patient to Room / Manage Stay)
+  (Record Procedure Undergoes)
+  (Manage Departments & Affiliiliations)
+  (Manage Physician Training & Certifications)
+  (Manage On-Call Schedules)
+  (Manage Blocks & Rooms)
+
+  ' Patient-facing
+  Patient --> (Register/Update Patient Profile)
+  Patient --> (Book Appointment)
+  Patient --> (Cancel/Reschedule Appointment)
+
+  ' Physician-facing
+  Doctor --> (Prescribe Medication)
+  Doctor --> (Record Procedure Undergoes)
+  Doctor --> (Manage Physician Training & Certifications)
+
+  ' Nurse-facing
+  Nurse --> (Book Appointment)
+  Nurse --> (Admit Patient to Room / Manage Stay)
+  Nurse --> (Manage On-Call Schedules)
+
+  ' Admin-facing
+  Admin --> (Maintain Medication Catalog)
+  Admin --> (Manage Departments & Affiliiliations)
+  Admin --> (Manage Blocks & Rooms)
+
+  ' Support searches (optional)
+  Patient --> (Search Physician / Department)
+  Nurse --> (Search Physician / Department)
+  Admin --> (Search Physician / Department)
+}
+@enduml

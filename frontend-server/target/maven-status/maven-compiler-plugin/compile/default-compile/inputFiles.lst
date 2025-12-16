@@ -1,2 +1,11 @@
 /Users/dev/Downloads/hospital-management/frontend-server/src/main/java/com/medicare/frontend/FrontendServerApplication.java
+/Users/dev/Downloads/hospital-management/frontend-server/src/main/java/com/medicare/frontend/client/BackendClientException.java
+/Users/dev/Downloads/hospital-management/frontend-server/src/main/java/com/medicare/frontend/client/HmsBackendClient.java
+/Users/dev/Downloads/hospital-management/frontend-server/src/main/java/com/medicare/frontend/config/BackendClientConfig.java
 /Users/dev/Downloads/hospital-management/frontend-server/src/main/java/com/medicare/frontend/controller/PageController.java
+/Users/dev/Downloads/hospital-management/frontend-server/src/main/java/com/medicare/frontend/dto/DepartmentDto.java
+/Users/dev/Downloads/hospital-management/frontend-server/src/main/java/com/medicare/frontend/dto/NurseSummaryDto.java
+/Users/dev/Downloads/hospital-management/frontend-server/src/main/java/com/medicare/frontend/dto/PatientDto.java
+/Users/dev/Downloads/hospital-management/frontend-server/src/main/java/com/medicare/frontend/dto/PhysicianDto.java
+/Users/dev/Downloads/hospital-management/frontend-server/src/main/java/com/medicare/frontend/dto/PrescribesDto.java
+/Users/dev/Downloads/hospital-management/frontend-server/src/main/java/com/medicare/frontend/dto/ProcedureDto.java

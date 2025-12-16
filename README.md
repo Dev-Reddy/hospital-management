@@ -1,207 +1,112 @@
 # Hospital Management Demo – Application & Data Flow
 
-This README explains, in step-by-step language, how pages are served, which APIs they call, how the backend answers, and how to extend those flows. ASCII diagrams are included so you can visualize the journey from the browser to the database and back.
+This README explains, in practical terms, how the Tailwind/Thymeleaf frontend now talks to the Spring Boot backend (`hmsbackend`), which APIs are invoked per teammate page, and how you can extend those flows without reintroducing client-side JavaScript.
 
 ---
 
 ## 1. High-Level Architecture
 
 ```
-┌────────────┐   http://localhost:8080   ┌────────────────────────┐
-│  Browser   │ ────────────────────────► │ Frontend Server (MVC) │
-└────────────┘   HTML + JS (Thymeleaf)   └────────────┬───────────┘
-                                                        │
-                                                        │ apiFetch()
-                                                        ▼
-                                   http://localhost:8081 (JSON REST APIs)
-┌────────────────────────────┐                          ┌──────────────────────┐
-│ frontend-server project    │◄────────────────────────►│ javabackend project  │
-│ • PageController           │  JSON responses          │ • REST controllers   │
-│ • Thymeleaf templates      │                          │ • Services + DB      │
-│ • JS assets (per page)     │                          │                      │
-└────────────────────────────┘                          └──────────────────────┘
+┌────────────┐   http://localhost:8080   ┌──────────────────────────────────────┐
+│  Browser   │ ────────────────────────► │ Frontend Server (Spring MVC + HTML) │
+└────────────┘        HTML only          └────────────┬────────────────────────┘
+                                                      │ server-side RestTemplate calls
+                                                      ▼
+                                     http://localhost:8081 (JSON REST APIs)
+┌────────────────────────────┐                        ┌────────────────────────────┐
+│ frontend-server project    │◄──────────────────────►│ hmsbackend project         │
+│ • PageController           │  JSON responses        │ • REST controllers/service │
+│ • Thymeleaf templates      │                        │ • MySQL persistence        │
+└────────────────────────────┘                        └────────────────────────────┘
 ```
 
-**Request lifecycle**
-
-1. User points the browser to `/` or `/team/{member}` on `http://localhost:8080`.
-2. `PageController` returns the relevant Thymeleaf template (`index.html` or `team/{member}.html`).
-3. The template loads Tailwind CSS plus a page-specific JavaScript file from `static/assets/js`.
-4. That JS module uses the shared `apiFetch()` helper to call the REST backend at `http://localhost:8081`.
-5. A REST controller in `javabackend/HM/SprintProject` receives the call, runs a service, hits the database, and returns JSON.
-6. The JS module updates its local state and re-renders the DOM (cards, tables, modals, etc.).
+**Key points**
+1. Every `/team/{member}` endpoint is a Spring MVC handler that loads data with `RestTemplate` before rendering Thymeleaf.
+2. No JavaScript runs in the browser—nav highlighting and data binding are 100% server-side.
+3. The frontend now depends solely on the `hmsbackend` module; the legacy `javabackend` folder is no longer referenced.
 
 ---
 
-## 2. Controllers & Endpoints Map
+## 2. Per-Page Backend Wiring
 
-| Frontend URL | Template | JS Modules | Backend Endpoints Hit | Backend Controller(s) |
-|--------------|----------|------------|-----------------------|-----------------------|
-| `/` | `templates/index.html` | (none – static content) | – | – |
-| `/team/akhila` | `templates/team/akhila.html` | `assets/js/akhila.js` + `api-config.js` | `GET /patients`, `GET /appointments` | `PatientController`, `AppointmentController` |
-| `/team/kanishka` | `templates/team/kanishka.html` | `assets/js/kanishka.js` | `GET /patients?limit=10`, `GET /patients/{ssn}` | `PatientController` |
-| `/team/samiksha` | `templates/team/samiksha.html` | `assets/js/samiksha.js` | `GET /physicians`, `GET /departments` | `PhysicianController`, `DepartmentController` |
-| `/team/keerthana` | `templates/team/keerthana.html` | `assets/js/keerthana.js` | `GET /patients`, `GET /appointments` | `PatientController`, `AppointmentController` |
-| `/team/mahitha` | `templates/team/mahitha.html` | `assets/js/mahitha.js` | `GET /nurses`, `GET /nurses/{id}` | `NurseController` |
-| `/team/karthik` | `templates/team/karthik.html` | `assets/js/karthik.js` | `GET /procedures`, `GET /procedures/{code}` | `ProcedureController` |
+Each teammate page intentionally uses exactly two REST calls: one collection “GET all” to build the left-hand selection list, and one “GET by id” to render the detail pane.
 
-All backend controllers live under `javabackend/HM/SprintProject/src/main/java/com/training/controller/`. Each controller delegates work to a service layer (not shown) and returns JSON through Jackson.
+| Team page | GET-all call | GET-by-id call | What the page shows |
+|-----------|--------------|----------------|---------------------|
+| `/team/akhila` | `GET /api/physician` | `GET /api/patient/{physicianId}` | Physician directory with the patients assigned to the selected doctor. |
+| `/team/karthik` | `GET /api/procedure` | `GET /api/trained_in/physicians/{procedureCode}` | Catalogue of treatments plus the physicians certified for the highlighted procedure. |
+| `/team/keerthana` | `GET /api/patient` | `GET /api/appointment/date/{patientId}` | Patient roster with the upcoming appointment dates for the chosen patient. |
+| `/team/mahitha` | `GET /api/nurse` | `GET /api/patient/patient/{nurseId}` | Registered nurses and the patients they have handled. |
+| `/team/kanishka` | `GET /api/patient` | `GET /api/prescribes/patient/{ssn}` | Patient list with their insurance information and prescribed medications. |
+| `/team/samiksha` | `GET /api/physician` | `GET /api/affiliated_with/department/{physicianId}` | Physician directory tied to the departments they are affiliated with. |
 
----
-
-## 3. Request Flow Diagrams
-
-### 3.1 Generic Team Page Flow
-
-```
-[1] Browser hits /team/{member}
-      │
-      ▼
-[2] PageController.team() sets model.pageRoute and returns templates/team/{member}.html
-      │
-      ▼
-[3] Template loads CSS + member JS module (e.g., assets/js/akhila.js)
-      │
-      ▼
-[4] JS state initialized → render "loading" cards
-      │
-      ▼
-[5] JS calls apiFetch("/resource") AND/OR apiFetch("/resource/{id}")
-      │
-      ▼
-[6] REST controller (e.g., PatientController) loads data via service/repository
-      │
-      ▼
-[7] JSON response → JS updates in-memory state and re-renders the DOM
-```
-
-You can layer more data by repeating steps 5–7 with new endpoints and render functions.
-
-### 3.2 Example: Akhila’s Patient Directory
-
-```
-Browser      Frontend Server          JS Module           Backend API
-   │ GET /team/akhila │                   │                       │
-   ├──────────────────► PageController    │                       │
-   │  HTML Template   │                   │                       │
-   ◄──────────────────┘                   │                       │
-   │ (loads akhila.js)                    │                       │
-   │                                      │ DOMContentLoaded      │
-   │                                      ├───────────────► loadAkhilaData()
-   │                                      │                       │
-   │                                      │ apiFetch("/patients") │
-   │                                      │──────────────────────►│ PatientController.getAllPatients()
-   │                                      │                       ├──► PatientService / DB
-   │                                      │                       │
-   │                                      │                       ◄── JSON list
-   │                                      │◄──────────────────────│
-   │                                      │ apiFetch("/appointments")
-   │                                      │──────────────────────►│ AppointmentController.getAllAppointments()
-   │                                      │                       ├──► AppointmentService / DB
-   │                                      │                       │
-   │                                      │                       ◄── JSON list
-   │                                      │◄──────────────────────│
-   │                                      │ Render patient cards + detail panel
-```
-
-This same “double fetch + render” pattern shows up on Keerthana’s page (patients + appointments) and Samiksha’s page (physicians + departments).
+The frontend keeps the currently selected identifier in the query string (e.g., `/team/karthik?procedureCode=10`) so a full-page reload retrieves the correct detail block without JavaScript.
 
 ---
 
-## 4. Detailed Page Guides
+## 3. Request Lifecycle
+
+```
+Browser  ──►  GET /team/mahitha?nurseId=101
+              │
+              ▼
+Frontend controller
+  1. RestTemplate -> GET /api/nurse
+  2. RestTemplate -> GET /api/patient/patient/101
+  3. Model populated with nurses + patients
+              │
+              ▼
+Thymeleaf template renders list + detail in one response (no JS)
+```
+
+This same “fetch list → fetch detail → render HTML” pattern powers every teammate route. If either backend call fails, the controller falls back to empty lists so the template can display a graceful “no data” message.
+
+---
+
+## 4. Feature Walkthroughs
 
 ### 4.1 Home (`/`)
-*Purpose:* Display static branding + teammate navigation.
+*Purpose:* Static landing page and navigation hub.
 
-*Flow:* Browser → `GET /` → `PageController.home()` → `templates/index.html`. No API calls. All text/images live inside the template.
+*Flow:* `GET /` → `PageController.home()` → `templates/index.html`. No backend calls are made.
 
-*Extend it:* Add a `<script src="/assets/js/home-metrics.js"></script>` tag and use `apiFetch("/metrics")` to show live stats without touching the backend routing.
+### 4.2 Akhila – Physician ➜ Patients
+1. Controller loads `List<PhysicianDto>` via `GET /api/physician` and picks the requested `physicianId` (or the first entry).
+2. It then calls `GET /api/patient/{physicianId}` to fetch the roster for that doctor.
+3. Thymeleaf renders the physician list on the left and the selected doctor’s patient cards on the right.
 
----
+### 4.3 Karthik – Procedures ➜ Trained Physicians
+1. Load every procedure from `/api/procedure`.
+2. When one is selected (via `?procedureCode=...`), fetch `GET /api/trained_in/physicians/{code}`.
+3. The template shows the chosen procedure header plus the certified physicians.
 
-### 4.2 Akhila – Patient & Appointments
-*Use case:* Show every patient and their appointment history.
+### 4.4 Keerthana – Patients ➜ Appointment Dates
+1. Fetch all patients once (`/api/patient`).
+2. Selecting a patient triggers `GET /api/appointment/date/{patientId}` which returns an array of ISO dates.
+3. Thymeleaf prints the pending appointment timeline.
 
-1. `loadAkhilaData()` fires on DOM ready.
-2. Fetch `/patients` and `/appointments`; store results inside `akhilaState`.
-3. Auto-select the first patient (`selectedSsn = patients[0].ssn`).
-4. `renderAkhilaList()` builds the left column; clicking an entry updates `selectedSsn`.
-5. `renderAkhilaDetails()` filters appointments for that SSN, then displays patient metadata + appointment cards.
+### 4.5 Mahitha – Nurses ➜ Patients seen
+1. Load nurses (`/api/nurse`).
+2. Fetch `/api/patient/patient/{nurseId}` for the highlighted nurse.
+3. The view surfaces registration info plus the patients tied to that nurse.
 
-*Additions:* If you create `/patients/{ssn}/notes`, call it right after selecting a patient, then append note cards in `renderAkhilaDetails()`. Everything else stays the same.
+### 4.6 Kanishka – Patients ➜ Prescriptions
+1. Grab all patient summaries.
+2. When you select a patient, call `/api/prescribes/patient/{ssn}` to obtain prescriptions (medication name, dose, physician, timestamp).
+3. Thymeleaf renders a medication history list.
 
----
-
-### 4.3 Kanishka – Physician Network
-*Use case:* Inspect a single patient plus their primary physician.
-
-1. `loadKanishkaPatients()` fetches `/patients?limit=10`.
-2. First patient becomes the default selection; `selectKanishkaPatient(ssn)` runs.
-3. That function fetches `/patients/{ssn}` to retrieve the full record (including nested physician).
-4. `renderKanishkaDetails()` displays contact info + primary care physician.
-
-*Adding training history:* expose `/patients/{ssn}/training`, call it inside `selectKanishkaPatient()`, store the result on `kanishkaState.selectedPatient.training`, and render a training list.
-
----
-
-### 4.4 Samiksha – Departments
-*Use case:* Match physicians to their departments.
-
-1. `loadSamikshaData()` fetches `/physicians` and `/departments`.
-2. The JS stores both arrays, selects the first physician, and renders two panes.
-3. In the details pane, the code finds the matching department (`departmentId`) and shows leadership and identifiers.
-
-*Extending fields:* Add properties (e.g., staff counts) to the Department entity + controller, then display the new fields inside the details template without modifying the flow.
+### 4.7 Samiksha – Physicians ➜ Departments
+1. Fetch physicians.
+2. Load departments for the selected physician via `/api/affiliated_with/department/{physicianId}`.
+3. The UI displays affiliation chips with department IDs and names.
 
 ---
 
-### 4.5 Keerthana – Room Management
-*Use case:* Track room assignments via the latest appointment.
+## 5. Extending the Flow
 
-1. Fetch `/patients` + `/appointments` (same as Akhila).
-2. When a patient is selected, compute their latest appointment.
-3. Render the assigned room, upcoming appointments, and physician contact.
+1. **Add a backend capability:** Implement or reuse an endpoint inside `hmsbackend/src/main/java/com/capgemini/hmsbackend/controller`. Make sure it is reachable under `/api/...`.
+2. **Expose it to the frontend:** Add a method to `HmsBackendClient` that calls the new endpoint and maps its JSON to a DTO living under `frontend-server/src/main/java/com/medicare/frontend/dto`.
+3. **Bind it to a page:** Update `PageController` (or a dedicated service) to populate the `Model` with the new data and render it inside the relevant Thymeleaf template.
+4. **Keep it server-side:** Resist adding client-side JavaScript—the navigation + templates are already wired to do full page reloads with the proper query parameters.
 
-*Adding updates:* Implement `PUT /appointments/{id}` in the backend, add a form/button in `keerthana.js`, call `apiFetch(path, { method: "PUT", body: JSON.stringify(...) })`, and reload appointments to reflect the new room.
-
----
-
-### 4.6 Mahitha – Nursing Staff
-*Use case:* Browse nurse profiles.
-
-1. `loadMahithaNurses()` fetches `/nurses`.
-2. Selecting a nurse triggers `selectMahithaNurse(id)` which fetches `/nurses/{id}` for full details.
-3. The details pane shows employee info, registration status, and department assignment.
-
-*Future actions:* The backend already exposes `POST /nurses`, `PUT /nurses/{id}`, and `DELETE /nurses/{id}`. Hook up forms/buttons in `mahitha.js` to call those endpoints, then refresh the list.
-
----
-
-### 4.7 Karthik – Medical Procedures
-*Use case:* List procedures and open detail modals.
-
-1. `loadKarthikProcedures()` fetches `/procedures` to populate the grid.
-2. Clicking a card opens the modal and fetches `/procedures/{code}`.
-3. The modal shows the returned data; closing the modal simply hides the overlay.
-
-*Enhancements:* Add filter inputs that call `/procedures?type={value}` or include additional metadata (duration, resources) in the backend response and display it inside the modal.
-
----
-
-## 5. How to Extend or Modify Flows
-
-1. **Add or change an API**
-   - Implement the controller/service/repository change in `javabackend`.
-   - Expose the endpoint under a clear path (e.g., `/patients/{ssn}/notes`).
-   - Restart the backend service.
-2. **Consume it on the frontend**
-   - Import the endpoint via `apiFetch(newPath, options)`.
-   - Update the relevant state object and render functions to reflect the new data.
-3. **Adjust templates/navigation**
-   - Update `PageController` or add new controllers if you introduce new views.
-   - Create a matching template in `frontend-server/src/main/resources/templates`.
-   - Link the template to a JS file in `static/assets/js` and follow the same pattern (state object + render functions).
-4. **Document or share**
-   - Keep this README updated so future teammates know which files to touch for each flow.
-
-Following this recipe keeps the architecture predictable: browser → template → JS → REST controller → service → database → JSON → DOM. Any new feature should fit somewhere along this chain.
+Following this recipe keeps the architecture predictable: browser request ➜ Spring MVC controller ➜ RestTemplate calls into `hmsbackend` ➜ Thymeleaf renders HTML. Any new feature should fit somewhere in that chain.
