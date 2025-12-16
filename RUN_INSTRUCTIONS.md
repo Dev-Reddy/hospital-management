@@ -128,8 +128,8 @@ The frontend will be available at: `http://localhost:8080`
 - Should see nurses list from backend
 - Click a nurse to see details
 
-**Karthika (Procedures):**
-- Navigate to: `http://localhost:8080/team/karthika`
+**Karthik (Procedures):**
+- Navigate to: `http://localhost:8080/team/karthik`
 - Should see procedures grid from backend
 - Click a procedure to see modal with details
 
@@ -211,7 +211,7 @@ Before submitting, verify:
 - [ ] Network tab shows `GET /patients?limit=10` call
 - [ ] Clicking a patient shows details
 - [ ] Network tab shows `GET /patients/{ssn}` call
-- [ ] At least one other module (Mahitha/Karthika) works
+- [ ] At least one other module (Mahitha/Karthik) works
 - [ ] No CORS errors in console
 - [ ] No JavaScript errors in console
 

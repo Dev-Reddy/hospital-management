@@ -43,7 +43,7 @@ This README explains, in step-by-step language, how pages are served, which APIs
 | `/team/samiksha` | `templates/team/samiksha.html` | `assets/js/samiksha.js` | `GET /physicians`, `GET /departments` | `PhysicianController`, `DepartmentController` |
 | `/team/keerthana` | `templates/team/keerthana.html` | `assets/js/keerthana.js` | `GET /patients`, `GET /appointments` | `PatientController`, `AppointmentController` |
 | `/team/mahitha` | `templates/team/mahitha.html` | `assets/js/mahitha.js` | `GET /nurses`, `GET /nurses/{id}` | `NurseController` |
-| `/team/karthika` | `templates/team/karthika.html` | `assets/js/karthika.js` | `GET /procedures`, `GET /procedures/{code}` | `ProcedureController` |
+| `/team/karthik` | `templates/team/karthik.html` | `assets/js/karthik.js` | `GET /procedures`, `GET /procedures/{code}` | `ProcedureController` |
 
 All backend controllers live under `javabackend/HM/SprintProject/src/main/java/com/training/controller/`. Each controller delegates work to a service layer (not shown) and returns JSON through Jackson.
 
@@ -177,10 +177,10 @@ This same “double fetch + render” pattern shows up on Keerthana’s page (pa
 
 ---
 
-### 4.7 Karthika – Medical Procedures
+### 4.7 Karthik – Medical Procedures
 *Use case:* List procedures and open detail modals.
 
-1. `loadKarthikaProcedures()` fetches `/procedures` to populate the grid.
+1. `loadKarthikProcedures()` fetches `/procedures` to populate the grid.
 2. Clicking a card opens the modal and fetches `/procedures/{code}`.
 3. The modal shows the returned data; closing the modal simply hides the overlay.
 
